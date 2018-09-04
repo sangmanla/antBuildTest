@@ -30,5 +30,30 @@
         <delete dir="dist" />
         <delete dir="build" />
     </target>
+	
+	<property name="tomcat.home" value="C:\tomcat7" />
+
+    <target name="tomcat-restart" depends="war">
+        <antcall target="tomcat-stop" />
+        <antcall target="tomcat-start" />
+    </target>
+
+    <target name="tomcat-start">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true" spawn="true">
+            <classpath path="${tomcat.home}/bin/bootstrap.jar:${tomcat.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+            <!--If you are getting any OutOfMemoryError, remove the comments 
+            and enable jvm argument of the following line-->
+            <!--jvmarg value="-XX:MaxPermSize=256m"/-->
+        </java>
+    </target>
+
+    <target name="tomcat-stop">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
+            <classpath path="${tomcat.home}/bin/bootstrap.jar:${tomcat.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+            <arg line="stop"/>
+        </java>
+    </target>
      
 </project>
