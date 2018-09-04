@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<project name="AntWarFileExample" default="war">
+ 
+    <path id="compile.classpath">
+        <fileset dir="c:/tomcat7/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+    
+    <target name="init">
+        <mkdir dir="antbuildtest/build/classes"/>
+        <mkdir dir="antbuildtest/dist" />
+    </target>
+     
+    <target name="compile" depends="init" >
+        <javac destdir="build/classes" debug="true" srcdir="antbuildtest/src" includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+    
+    <target name="war" depends="compile">
+        <war destfile="antbuildtest/dist/MyWebApplication.war" webxml="antbuildtest/WebContent/WEB-INF/web.xml">
+            <fileset dir="antbuildtest/WebContent"/>
+            <lib dir="antbuildtest/WebContent/WEB-INF/lib"/>
+            <classes dir="antbuildtest/build/classes"/>
+        </war>
+    </target>
+     
+    <target name="clean">
+        <delete dir="antbuildtest/dist" />
+        <delete dir="antbuildtest/build" />
+    </target>
+    
+  	<property name="tomcat.home" value="C:\tomcat7" />
+
+    <target name="copyWar" depends="war">
+      <copy file="${basedir}/antBuildTest/dist/MyWebApplication.war" tofile="${tomcat.home}/webapps/ROOT.war"/>
+    </target>
+    
+    <target name="tomcat-restart" depends="copyWar">
+        <antcall target="tomcat-stop" />
+        <antcall target="waiting-for-tomcat-stop" />
+        <antcall target="tomcat-start" />
+    </target>
+
+    <target name="tomcat-start">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true" spawn="true">
+            <classpath path="${tomcat.home}/bin/bootstrap.jar:${tomcat.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+            <!--If you are getting any OutOfMemoryError, remove the comments 
+            and enable jvm argument of the following line-->
+            <!--jvmarg value="-XX:MaxPermSize=256m"/-->
+        </java>
+    </target>
+
+    <target name="tomcat-stop">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
+            <classpath path="${tomcat.home}/bin/bootstrap.jar:${tomcat.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+            <arg line="stop"/>
+        </java>
+    </target>
+    
+    <target name="waiting-for-tomcat-stop">
+      <sleep seconds="5"/>
+    </target>
+     
+</project>
