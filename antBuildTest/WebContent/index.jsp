@@ -7,6 +7,6 @@
 <title>Welcome</title>
 </head>
 <body>
-sjdflasdfjaslfkj
+This is my index.jsp.
 </body>
 </html>
